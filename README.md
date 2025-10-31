@@ -59,7 +59,41 @@ JAM OS es la primera Plataforma de Ejecución que resuelve las tres necesidades 
 
 Todos los derechos sobre la estructura, el diseño y el código fuente de JAM OS están estrictamente reservados. Esta declaración de Propiedad Intelectual aplica a todos los componentes del sistema: la **Unidad Central de Control** y la **Capa de Orquestación Cloud**.
 
-Para oportunidades de licenciamiento o consultas técnicas, por favor, contacte a:
+
+El kernel JAM OS ataca principalmente tres aspectos o problemas clave que son críticos en la arquitectura de sistemas operativos modernos para servidores:
+
+1. 🛡️ La Vulnerabilidad de Seguridad y el Aislamiento (Prevención de Fallos)
+Este es el objetivo principal del diseño. JAM OS busca asegurar que el código no confiable de un proceso no pueda dañar ni acceder a los recursos de otros procesos o del sistema operativo.
+
+Mecanismos que lo atacan:
+
+Aislamiento de Archivos (Sandboxing): Implementa el JAM_FileSandbox para prevenir el ataque de Path Traversal (../../..). Esto garantiza que un proceso solo puede leer/escribir dentro de su directorio asignado (/var/jam/processes/<pid>).
+
+Control de Acceso Basado en Capacidades: Usa las Capabilities (ej. 'filesystem.read', 'network.tcp') para asegurarse de que un proceso solo tenga los permisos mínimos indispensables para su tarea (Principio del Mínimo Privilegio).
+
+Aislamiento de Memoria Virtual: Cada proceso obtiene su propio espacio de direcciones de memoria virtual, impidiendo que un proceso acceda o corrompa la memoria de otro.
+
+2. 🧱 La Complejidad y la Fiabilidad del Kernel (Arquitectura)
+JAM OS aborda el problema de los kernels monolíticos, que son difíciles de depurar y mantener, ya que un fallo en cualquier parte (como un controlador de dispositivo) puede colapsar todo el sistema.
+
+Mecanismos que lo atacan:
+
+Arquitectura de Microkernel: El núcleo (Kernel) es mínimo, gestionando solo las funciones más esenciales (mensajería, planificación, memoria). La mayoría de los servicios (red, archivos) se ejecutan en modo de usuario. Esto reduce la superficie de ataque y hace que el sistema sea más fiable; si falla un componente de alto nivel, el kernel sigue funcionando.
+
+Capa de Abstracción de Hardware (HAL): Separa las interacciones con el hardware subyacente (Node.js/filesystem) del código de gestión del kernel. Esto mejora la modularidad y la portabilidad.
+
+3. ⚡ El Rendimiento y la Contención de Recursos (Ejecución)
+El diseño ataca la ineficiencia que a menudo se encuentra en las máquinas virtuales completas o en los contenedores pesados.
+
+Mecanismos que lo atacan:
+
+Ejecución Nativa con WebAssembly (WASM): Utiliza un Runtime WASM para ejecutar el código de la aplicación. WASM ofrece un rendimiento casi nativo, pero dentro de un entorno de sandbox seguro, lo que lo hace mucho más rápido y ligero que ejecutar una máquina virtual o un contenedor Linux completo.
+
+Planificación con Cuotas de Tiempo: El scheduler utiliza cuotas y prioridades para garantizar que ningún proceso monopolice la CPU, asegurando una distribución justa de los recursos y previniendo ataques de Denegación de Servicio (DoS) por agotamiento de CPU.
+
+En resumen, JAM OS es una solución de alto rendimiento y alta seguridad diseñada para ejecutar cargas de trabajo de servidor (especialmente microservicios y serverless) con una aislamiento extremo y un diseño modular inherente a la arquitectura de microkernel.
+
+
 * **Correo Electrónico:** [disruptorweb3.jam@gmail.com](mailto:disruptorweb3.jam@gmail.com)
 * **Red Social:** [@disruptorweb3.jam (Instagram)](https://www.instagram.com/disruptorweb3.jam/)
 
